@@ -1,0 +1,20 @@
+{% extends 'blog/base.html' %}
+{% block content %}
+<div class='column main'>
+	<div class='sort'><a href="{% url 'blog-home' %}"><small>It's OK. Go to homepage</small></a></div>
+	<div class='content'>	
+		<div>
+			{% if subcomment.author == user %}
+			<p class='read'><a href="{% url 'subcomment-update' subcomment_id=subcomment.id %}">Say it differently</a> | <a href="{% url 'subcomment-delete' subcomment_id=subcomment.id %}">Don't reply</a></p>
+			{% endif %}
+		
+		<p>{{ subcomment.content }}</p>
+		
+		</div>
+
+	</div>
+
+</div>
+
+          
+{% endblock content %}

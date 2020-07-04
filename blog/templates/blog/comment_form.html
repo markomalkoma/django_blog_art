@@ -1,0 +1,23 @@
+{% extends 'blog/base.html' %}
+{% block content %}
+
+   
+		
+<div style='margin-bottom: 120px;' class=' column main'>
+  <form method="post" novalidate enctype="multipart/form-data">
+  	{% csrf_token %}
+  <div class='sort' style="text-align: right;"><a href="{% url 'blog-home' %}" style="text-align: right;"><small>Go home</small></a></div>
+  <div class="form-group">
+    <div id="comment-label"><label for="subject">Create a comment</label></div>
+    <div class="comment">
+      <textarea id="subject" name="subject" style="height:200px"></textarea>
+    </div>
+  </div>
+  <div class="submit">
+    <input type="submit" name="comment" value="Post">
+  </div>
+  </form>
+</div>
+	
+	
+{% endblock content %}

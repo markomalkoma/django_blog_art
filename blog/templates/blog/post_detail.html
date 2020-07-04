@@ -1,0 +1,32 @@
+{% extends 'blog/base.html' %}
+{% block content %}
+<div class='column main'>
+	<div class='sort'><a href="{% url 'blog-home' %}"><small>It's OK. Let me see article on homepage</small></a></div>
+	<div class='content'>	
+		<div class='detail_post'>
+			{% if object.author == user %}
+			<p class='read'><span onclick="f_paragraphs()">Show paragraphs</span> | <a href="{% url 'post-update' object.id %}">Change post</a> | <a href="{% url 'post-delete' object.id %}">Delete post</a></p>
+			{% endif %}
+		
+		<h1>{{ object.title }}</h1>
+		<p id='arranged_content' style="text-indent: 40px">{{ object.content }}</p>
+		
+		</div>
+
+	</div>
+
+</div>
+
+
+<script type="text/javascript">
+	function f_paragraphs(){
+	var txt = document.getElementById('arranged_content').innerHTML;
+	txt = txt.replace(/\n/g, "<p></p><span style='visibility:hidden'>hiden</span>");
+	document.getElementById('arranged_content').innerHTML=txt;
+	}
+</script>
+
+          
+{% endblock content %}
+
+	

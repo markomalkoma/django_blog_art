@@ -1,0 +1,35 @@
+{% extends 'blog/base.html' %}
+{% block content %}
+{% load crispy_forms_tags %}
+   
+		
+
+		<div style='margin-bottom: 120px;' class=' column main'>
+			<div class='sort'><a href="{% url 'blog-home' %}"><small>Go home</small></a></div>
+			
+			<form  method="post" novalidate enctype="multipart/form-data">
+  			{% csrf_token %}
+
+			{% for hidden_field in form.hidden_fields %}
+    		{{ hidden_field }}
+  			{% endfor %}
+
+  			{% for field in form.visible_fields %}
+    		<div class="form-group">
+      			<div class='label'>{{ field.label_tag }}</div>
+      			<div class='field'>{{ field }}</div>
+				
+				<div class='help'>
+      			{% if field.help_text %}
+        			<small class="smalltext">{{ field.help_text }}</small>
+      			{% endif %}
+      			</div>
+
+    		</div>
+  			{% endfor %}
+			<div><input type="submit" name="aricle_b" value="Post"></div>
+			</form>	
+		</div>	
+	
+	
+{% endblock content %}

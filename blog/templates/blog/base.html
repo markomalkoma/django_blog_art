@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="{% static 'blog/main195.css' %}">
+	
+	<title>Paintings and Secrets</title>
+</head>
+<body>
+	<div class='kontejner'>
+		{% if messages %}{% for message in messages %}{{ message }}{% endfor %}{% endif %}
+		<div class='nav'>
+			<form action="{% url 'blog-home' %}" method="POST" name='select'>
+			{% csrf_token %}
+			<input type="text" name="article" placeholder="Painter or Author..">
+			<input type="submit" name="aricle_b" value="Search">
+			</form>
+			{% if user.is_authenticated %}
+			<a href="{% url 'logout' %}">Logout</a>
+			<a href="{% url 'profile' %}">{{ user.username }}</a>
+			{% else %}
+			<a href="{% url 'login' %}">Login</a>
+			<a href="{% url 'register' %}">Register</a>
+			{% endif %}
+			<a href="{% url 'blog-home' %}">Home</a>
+
+		</div>
+		<div class='art'>
+		{% block content %}{% endblock content %}
+			<div class='column side'>
+		        <div><a href="{% url 'blog-about' %}">About blog</a></div>
+				
+		        {% if posts %}
+		        <hr style="margin-top: 20px; border: #d7c1a8 solid 1px; ">
+		     	<br>
+		        {% for post in posts %}
+		        <div><a href="#cover_{{ forloop.counter }}"><small>#{{post.id}} '{{ post.painting_name }}'<br> - {{post.painter}}</small></a></div><br>
+		       	{% endfor %}
+		       	{% endif %}
+		       	
+			</div>
+		</div>
+	    <div class="footer"><p>by Marko Pavlović</p></div>
+	</div>
+
+</body>
+</html>

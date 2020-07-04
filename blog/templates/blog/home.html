@@ -1,0 +1,122 @@
+{% extends 'blog/base.html' %}
+{% block content %}
+
+<div class='column main'>
+	{% if order|divisibleby:"2" %}
+	<div class='sort'><a href="{% url 'blog-reverse' name=name order=order %}"><small>sort from Newest to Oldest</small></a></div>
+	{% else %}
+	<div class='sort'><a href="{% url 'blog-reverse' name=name order=order %}"><small>sort from Oldest to Newest</small></a></div>
+	{% endif %}
+	{% for post in posts %}
+	<div class='content' id='{{post.id}}'>
+		<div class='post_header'>
+			<div class='post_cover' id='cover_{{ forloop.counter }}'>
+				<img id='post_cover_{{forloop.counter}}' src="{{ post.painting_image.url }}" onclick="f_open_img('big_{{ forloop.counter }}')" style="cursor: pointer;">
+				<div id="big_{{ forloop.counter }}" class="big">
+  					<span class="close" id='close_{{ forloop.counter }}' onclick="f_close_img('big_{{ forloop.counter }}','big_img_{{ forloop.counter }}')">
+  					&times;
+  					</span>
+  					<img class="big_img" id="big_img_{{ forloop.counter }}" src="{{ post.painting_image.url }}">
+  					<div id="caption">{{ post.painting_name }} - {{ post.painter }}</div>
+				</div>
+			</div>
+			<div class='post_base'>
+				<div class='post_abstract' id='post_abstract_{{ forloop.counter }}'>
+					<div class='post_left'><p>#{{ post.id }}</p><p>'{{ post.painting_name }}'</p><p>{{ post.painter }}</p></div>
+					<div class='post_right'><p>{{ post.date_posted|date:'F d, Y' }}</p><p><small>written by</small> {{ post.author }}</p><p class='read' id='read_{{ forloop.counter }}' onclick="f_read('{{ forloop.counter }}')">Read</p></div>
+				</div>
+				<div id='post_content_{{ forloop.counter }}'>
+					{% if post.author == user %}
+					<p class='links'><small><a href="{% url 'post-update' post.id %}">Update</a> | <a href="{% url 'post-delete' post.id %}">Delete</a> | <span onclick="f_back_abstract('{{ forloop.counter }}')">Close</span></small></p>
+					{% else %}
+					<p class='links'><small><span onclick="f_back_abstract('{{ forloop.counter }}')">Close</span></small></p>
+					{% endif %}
+					<h1>{{ post.title }}</h1>			
+					<article id='article_{{ forloop.counter }}' >{{ post.content }}</article>
+					<p class='links' style="text-align: right; padding: 0 20px 30px 0"><small><span onclick="f_comment('{{ forloop.counter }}')">Comment-section</span></small></p>
+				</div>
+				<div class='comment_section'  id='comment_section_{{ forloop.counter }}'>
+					{% if user.is_authenticated %}
+					<p class='links' style="text-align: right; padding: 0 4% 10px 0; "><a style="font-style: italic;" href="{% url 'comment-create' post_id=post.id %}">Write a comment on '{{ post.title }}' by {{ post.author }}</a> | <span style="font-style: italic;" onclick="f_back_content('{{ forloop.counter }}')">Back to content</span></p>
+					{% else %}
+					<p class='links' style="text-align: right; padding: 0 4% 10px 0; "><a style="font-style: italic; color: #faf7f4; text-shadow: 0px 1px 0px #c7a885; cursor: not-allowed;" >Write a comment on '{{ post.title }}' by {{ post.author }}</a> | <span style="font-style: italic;" onclick="f_back_content('{{ forloop.counter }}')">Back to content</span></p>
+					{% endif %}
+					{% if post.comment_set.all %}
+						{% for comment in post.comment_set.all %}
+						
+							<img src="{{ comment.author.profile.image.url }}" style="border-radius: 50%; width: 60px; object-fit:cover; height: 60px; margin-left: 4%;"><span style="font-size: 26px; font-style: italic; margin: 0 0 0 2%;" >{{ comment.author.username }}</span>	
+							<hr style="margin: 0 4% 0 4%; border: #d7c1a8 solid 1px; ">
+							<p style="text-align: right; margin: 0 4% 3px 0"><small>{{ comment.date_posted|date:'F d, Y' }}</small></p>
+							<p class='comment' style='margin: 0 4% 0 4%; font-size: 18px;'>{{ comment.content }}</p>
+							{% if user.is_authenticated %}
+								<p style='text-align: right; padding: 0 4% 0 0;'>
+								<a href="{% url 'subcomment-create' comment_id=comment.id %}" style='text-decoration: none; color: #c7a885;'>Reply</a>
+								</p>
+							{% else %}	
+								<p style='text-align: right; padding-right: 4%;'>
+								<a  style='text-decoration: none; color: #faf7f4; text-shadow: 0px 1px 0px #c7a885; cursor: not-allowed;'>Reply</a>
+								</p>
+							{% endif %}
+							{% for subcomment in comment.subcomment_set.all %}
+								<img src="{{ subcomment.author.profile.image.url }}" style="border-radius: 50%; width: 40px; height: 40px; object-fit:cover;margin-left: 39%;"><span style="font-size: 22px; font-style: italic; margin: 0 0 0 1%;" >{{ subcomment.author.username }}</span>
+								<hr style="margin: 0 4% 0 39%; border: #d7c1a8 solid 1px; ">
+								<p style="text-align: right; margin: 0 4% 2px 0"><small>{{ subcomment.date_posted|date:'F d, Y' }}</small></p>
+								<p class='subcomment' style='margin: 0 4% 20px 39%; font-size: 16px;'>{{ subcomment.content }}</p>
+							{% endfor %}
+						{% endfor %}
+						<p class='links' style="text-align: right; padding: 0 4% 30px 0"><span style="font-style: italic;" onclick="f_back_content('{{ forloop.counter }}')">Back to content</span></p>
+					{% else %}
+						<p style="padding: 0 4% 30px 4%; font-style: normal;">No comments yet</p>
+					{% endif %}
+				</div>
+		    </div>
+		</div>
+	</div>	
+	{% endfor %}
+</div>	
+
+<script type="text/javascript">
+
+function f_read(p) {
+var post_content = 'post_content_var'.replace('var',p);
+var post_abstract = 'post_abstract_var'.replace('var',p);
+document.getElementById(post_content).style.display = 'block';
+document.getElementById(post_abstract).style.display = 'none';
+
+var read_mode = 'article_var'.replace('var',p);
+var txt = document.getElementById(read_mode).innerHTML;
+txt = txt.replace(/\n/g, "<p></p><span style='visibility:hidden'>hiden</span>");
+document.getElementById(read_mode).innerHTML=txt;
+}
+
+function f_back_abstract(p) {
+var post_content = 'post_content_var'.replace('var',p);
+var post_abstract = 'post_abstract_var'.replace('var',p);
+document.getElementById(post_content).style.display = 'none';
+document.getElementById(post_abstract).style.display = 'block';
+}
+
+function f_comment(p) {
+var post_content = 'post_content_var'.replace('var',p);
+var comment_section = 'comment_section_var'.replace('var',p);
+document.getElementById(post_content).style.display = 'none';
+document.getElementById(comment_section).style.display = 'block';
+}
+
+function f_back_content(p) {
+var post_content = 'post_content_var'.replace('var',p);
+var comment_section = 'comment_section_var'.replace('var',p);
+document.getElementById(post_content).style.display = 'block';
+document.getElementById(comment_section).style.display = 'none';
+}
+
+function f_open_img(p) {document.getElementById(p).style.display = 'block';}
+
+function f_close_img(p) {document.getElementById(p).style.display = 'none';}
+
+
+
+</script>
+			
+		
+{% endblock content %}
